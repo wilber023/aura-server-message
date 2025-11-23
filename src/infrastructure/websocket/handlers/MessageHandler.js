@@ -2,25 +2,19 @@
 // Asumiendo que se usa un contenedor simple para inyección de dependencias (DI)
 const container = require('../../config/dependency-injection'); 
 const SendMessageUseCase = require('../../../application/use-cases/messages/SendMessageUseCase');
-const Joi = require('joi');
+const { messageSchema } = require('../../../shared/validators/messageValidator');
 const logger = require('../../../shared/utils/logger');
 
-// Esquema de validación Joi
-const messageSchema = Joi.object({
-    conversationId: Joi.string().guid().required(),
-    text: Joi.string().min(1).max(2000).required(),
-    type: Joi.string().valid('direct', 'group').default('direct'),
-    // tempId: Joi.string().required() // ID temporal del cliente para ack
-});
+
 
 // Currying para pasar el socket
 module.exports = (socket) => (payload) => {
     try {
-        // 1. Validación de entrada
-        const { error, value } = messageSchema.validate(payload);
+        // 1. Validación y sanitización de entrada
+        const { error, value } = messageSchema.validate(payload, { abortEarly: false, stripUnknown: true });
         if (error) {
-            logger.warn(`Validación fallida para socket ${socket.id}: ${error.details[0].message}`);
-            return socket.emit('error', { event: 'send_message', message: error.details[0].message });
+            logger.warn(`Validación fallida para socket ${socket.id}: ${error.details.map(e => e.message).join('; ')}`);
+            return socket.emit('error', { event: 'send_message', errors: error.details.map(e => e.message) });
         }
         
         // 2. Ejecutar Caso de Uso (Adaptador-a-CasoDeUso)

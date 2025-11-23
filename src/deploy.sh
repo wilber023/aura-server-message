@@ -32,8 +32,19 @@ sudo ufw allow 3306/tcp # Puerto MySQL (Si la DB está local)
 sudo ufw allow 6379/tcp # Puerto Redis
 sudo ufw --force enable
 
-# --- 5. Despliegue del Código Fuente ---
+echo "--- Instalando dependencias ---"
+npm install
+
+# --- 5. Variables por defecto y despliegue del Código Fuente ---
 echo "--- 5. Clonando repositorio y configurando proyecto ---"
+PROJECT_DIR="/opt/aura-server-message"
+GIT_REPO="https://github.com/wilber023/aura-server-message.git"
+NGINX_CONF_PATH="/etc/nginx/sites-available/aura-server-message"
+DOMAIN_NAME="_" # Cambia por tu dominio real si tienes uno
+APP_PORT=3000
+EMAIL="admin@localhost" # Cambia por tu email real si usas SSL
+PROJECT_NAME="aura-server-message"
+
 if [ ! -d "$PROJECT_DIR" ]; then
     sudo mkdir -p $PROJECT_DIR
     sudo git clone $GIT_REPO $PROJECT_DIR
@@ -45,14 +56,22 @@ cd $PROJECT_DIR
 echo "--- Instalando dependencias ---"
 npm install
 
-# --- 6. Configuración y Migraciones ---
-echo "--- 6. Configurando variables de entorno (Crear archivo .env) ---"
-# Deberías tener un mecanismo para copiar el .env seguro a $PROJECT_DIR
-# Ejemplo:
-# echo "DB_HOST=localhost\nDB_USER=root\nDB_PASSWORD=secret\nDB_NAME=messaging_db\nREDIS_URL=redis://localhost:6379\nJWT_SECRET=super_seguro" > .env
-
 echo "--- Ejecutando Migraciones DB (Requiere .env y sequelize-cli configurados) ---"
 npm run migrate # Asumiendo que este script usa sequelize-cli para la ejecución
+
+# --- 6. Configuración y Migraciones ---
+echo "--- 6. Configurando variables de entorno (auto .env) ---"
+if [ ! -f .env ]; then
+    echo "DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=secret
+DB_NAME=messaging_db
+REDIS_URL=redis://localhost:6379
+JWT_SECRET=super_seguro" > .env
+fi
+
+echo "--- Ejecutando Migraciones DB (Requiere .env y sequelize-cli configurados) ---"
+npm run migrate
 
 # --- 7. Configuración de Nginx (Reverse Proxy + WebSockets) ---
 echo "--- 7. Configurando Nginx para soporte WSS/WebSockets ---"

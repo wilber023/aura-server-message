@@ -1,20 +1,28 @@
 // src/infrastructure/database/repositories/MessageRepository.js
 const IMessageRepository = require("../../../domain/repositories/IMessageRepository");
 const Message = require("../../../domain/entities/Message");
-// const MessageModel = require("../models/MessageModel"); // Importar modelo de Sequelize
+const { sequelize } = require('../../config/database');
+const MessageModel = require('../models/MessageModel')(sequelize); 
 
 class MessageRepository extends IMessageRepository {
     async save(message) {
-        // Lógica de mapeo y guardado con Sequelize
-        // await MessageModel.create(message.toPrimitives());
-        logger.info(`[DB] Mensaje guardado para ConvID: ${message.conversationId.value}`);
-        return message;
+        // C - CREATE
+        const created = await MessageModel.create(message.toPrimitives());
+        return Message.fromPrimitives(created.toJSON()); // Convertir de vuelta a Entidad
     }
     
-    async findByConversationId(conversationId, limit, offset) {
-        // Lógica de consulta en MySQL
-        return []; 
+    async findByConversationId(conversationId, limit = 50, offset = 0) {
+        // R - READ
+        const messages = await MessageModel.findAll({
+            where: { conversationId: conversationId.value },
+            limit: limit,
+            offset: offset,
+            order: [['createdAt', 'DESC']]
+        });
+        return messages.map(msg => Message.fromPrimitives(msg.toJSON()));
     }
+    
+    // ... Implementar update (U) y delete (D)
 }
 
 module.exports = MessageRepository;

@@ -1,8 +1,15 @@
 // src/infrastructure/config/database.js
 const { Sequelize } = require('sequelize');
-const logger = require('../../../shared/utils/logger');
+const logger = require('../../shared/utils/logger');
 require('dotenv').config();
+// src/infrastructure/config/database.js (Solo la función connectDB actualizada)
+// ... (código previo) ...
+const MessageModel = require('../database/models/MessageModel');
+const GroupModel = require('../database/models/GroupModel');
+const GroupMemberModel = require('../database/models/GroupMemberModel');
 
+// (Eliminada función connectDB duplicada)
+// ... (código previo) ...
 const sequelize = new Sequelize(
     process.env.DB_NAME || 'messaging_db',
     process.env.DB_USER || 'user',

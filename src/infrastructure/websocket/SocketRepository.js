@@ -18,7 +18,23 @@ class SocketRepository extends IWebSocketRepository {
         this.io.to(room).emit(event, payload);
     }
     
-    // Aquí iría la lógica específica para joinRoom, leaveRoom, etc.
+    async joinRoom(userId, room) {
+        // Lógica para unir a un usuario a una sala (room puede ser groupId, conversationId, etc.)
+        // En un entorno real, aquí se validaría la pertenencia y permisos
+        this.io.sockets.sockets.forEach(socket => {
+            if (socket.data && socket.data.user && socket.data.user.id === userId.value) {
+                socket.join(room);
+            }
+        });
+    }
+
+    async leaveRoom(userId, room) {
+        this.io.sockets.sockets.forEach(socket => {
+            if (socket.data && socket.data.user && socket.data.user.id === userId.value) {
+                socket.leave(room);
+            }
+        });
+    }
 }
 
 module.exports = SocketRepository;
