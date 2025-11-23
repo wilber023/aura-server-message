@@ -18,7 +18,7 @@ async function bootstrap() {
 
     // Middleware y Rutas HTTP (Para Grupos/Comunidades, etc.)
     app.use(express.json());
-    // require('./infrastructure/web/routes')(app); // Asumiendo que esto configura las rutas HTTP
+    require('./infrastructure/web/routes')(app); // ACTIVAR rutas HTTP
 
     // 2. Conexión a Base de Datos
     await connectDB();

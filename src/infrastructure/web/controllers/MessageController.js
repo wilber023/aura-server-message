@@ -1,12 +1,5 @@
-const { MessageService } = require('../../domain/services/MessageService');
-
-module.exports = {
-  async sendMessage(req, res) {
-    // ... lógica para enviar mensaje directo
-    res.status(201).json({ message: 'Mensaje enviado' });
-  },
-  async getGroupMessages(req, res) {
-    // ... lógica para obtener mensajes de grupo
-    res.json([]);
-  }
+// Simulación de envío de mensaje
+exports.sendMessage = async (req, res) => {
+    // Aquí deberías validar y guardar el mensaje en la base de datos
+    res.status(201).json({ message: 'Mensaje enviado (mock)' });
 };

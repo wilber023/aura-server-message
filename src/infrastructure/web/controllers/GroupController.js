@@ -56,9 +56,21 @@ async function getGroupMessages(req, res) {
     }
 }
 
+// Agregar miembro a grupo
+async function addMember(req, res) {
+    // Aquí deberías validar y agregar el miembro a la base de datos
+    res.status(201).json({ message: 'Member added (mock)' });
+}
+
+// Remover miembro de grupo
+async function removeMember(req, res) {
+    // Aquí deberías validar y eliminar el miembro de la base de datos
+    res.status(200).json({ message: 'Member removed (mock)' });
+}
+
 module.exports = {
     createGroup,
     getGroupMessages,
-    addMember: (req, res) => res.status(501).json({ message: "Not Implemented" }),
-    removeMember: (req, res) => res.status(501).json({ message: "Not Implemented" }),
+    addMember,
+    removeMember,
 };
