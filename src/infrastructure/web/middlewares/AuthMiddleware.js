@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET || 'mi_secreto_super_seguro_aqui';
 
 module.exports = (req, res, next) => {
+        console.log('🔐 AuthMiddleware - JWT_SECRET:', JWT_SECRET); 
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
